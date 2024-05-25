@@ -12,10 +12,22 @@ textButton.addEventListener('click', () => {
 
 
     // send request
-    xhr.send()
+    xhr.send();
 
 
-    // process request
+    // process the request
 
-
+    xhr.onload = () => {
+        if(xhr.status === 200) {
+            let data = xhr.responseText;
+            displayTextData(data);
+        }
+    } 
 });
+
+//display TextData
+
+let displayTextData = (data) => {
+    let htmlTemplate = `<h3>${data}</h3>`;
+    document.getElementById('text-card').innerHTML = htmlTemplate;
+}
