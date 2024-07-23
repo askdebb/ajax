@@ -1,0 +1,68 @@
+export class CustomHttpApi {
+    constructor() {
+        this.apiReqs = new XMLHttpRequest();
+    }
+
+    // GET Request
+
+    get = (URL, callback) => {
+        this.apiReqs.open('GET', URL, true);
+        this.apiReqs.send();
+        this.apiReqs.onload =() => {
+            if(this.apiReqs.status === 200) {
+                let data = this.apiReqs.responseText;
+                let users = JSON.parse(data);
+                console.log(users);
+                callback(null,users);
+            }
+            else {
+                callback(`Error : ${this.apiReqs.status}`)
+            }
+        };
+    };
+
+    // POST method
+
+    post = (URL, user, callback) => {
+        this.apiReqs.open('POST', URL, true);
+        this.apiReqs.setRequestHeader('Content-Type', 'application/json');
+        this.apiReqs.send(JSON.stringify(user));
+        this.apiReqs.onload = () => {
+            if(this.apiReqs.status === 200) {
+                let data = this.apiReqs.responseText;
+                let users = JSON.parse(data);
+                callback(null, users);
+            }
+            else {
+                callback(`Error: ${this.apiReqs.status}`);
+            }
+        }
+    }
+
+    // put method
+
+    put = (URL, user, callback) => {
+        this.apiReqs.open('PUT', URL, true);
+        this.apiReqs.setRequestHeader('Content-Type', 'application/json');
+        this.apiReqs.send(JSON.stringify(user));
+        this.apiReqs.onload = () => {
+            let data = this.apiReqs.responseText;
+            let users = JSON.parse(data);
+            callback(users);
+        }
+    }
+
+
+
+    // delete method
+    delete = (URL, callback) => {
+        this.apiReqs.open('DELETE', URL, true);
+        this.apiReqs.setRequestHeader('Content-Type', 'application.json');
+        this.apiReqs.send();
+        this.apiReqs.onload = () => {
+            let data = this.apiReqs.responseText;
+            let users = JSON.parse(data);
+            callback(users);
+        }                   
+    }
+}

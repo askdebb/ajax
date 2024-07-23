@@ -1,0 +1,20 @@
+[
+    {
+    "name": "Christopher",
+    "age": 34,
+    "gender": "Male",
+    "interest": "Tech"
+    },
+    {
+    "name": "Mary Jane",
+    "age": 32,
+    "gender": "Female",
+    "interest": "Chef"
+    },
+    {
+    "name": "Peter Parker",
+    "age": 24,
+    "gender": "Male",
+    "interest": "Community Saviour"
+    }
+]
