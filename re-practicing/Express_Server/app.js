@@ -5,7 +5,7 @@ const cors = require('cors');
 const apiRoute = require('./api/apiRoute');
 
 const hostname = '127.0.0.1';
-const port = '5000';
+const port = 5000;
 
 
 // body-parser configuration

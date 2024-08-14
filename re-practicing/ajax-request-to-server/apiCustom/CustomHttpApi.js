@@ -7,7 +7,7 @@ export class CustomHttpApi {
 
     get = (URL, callback) => {
         this.apiReqs.open('GET', URL, true);
-        this.apiReqs.send();
+        // this.apiReqs.send();
         this.apiReqs.onload =() => {
             if(this.apiReqs.status === 200) {
                 let data = this.apiReqs.responseText;
@@ -16,9 +16,11 @@ export class CustomHttpApi {
                 callback(null,users);
             }
             else {
-                callback(`Error : ${this.apiReqs.status}`)
+                callback(`Error : ${this.apiReqs.status}`);
             }
         };
+        this.apiReqs.onerror = () => callback("Request failed");
+        this.apiReqs.send();
     };
 
     // POST method
@@ -26,17 +28,17 @@ export class CustomHttpApi {
     post = (URL, user, callback) => {
         this.apiReqs.open('POST', URL, true);
         this.apiReqs.setRequestHeader('Content-Type', 'application/json');
-        this.apiReqs.send(JSON.stringify(user));
         this.apiReqs.onload = () => {
-            if(this.apiReqs.status === 200) {
+            if (this.apiReqs.status === 200 || this.apiReqs.status === 201) {
                 let data = this.apiReqs.responseText;
-                let users = JSON.parse(data);
-                callback(null, users);
-            }
-            else {
+                let result = JSON.parse(data);
+                callback(null,result);
+            } else {
                 callback(`Error: ${this.apiReqs.status}`);
             }
-        }
+        };
+        this.apiReqs.onerror = () => callback('Request failed');
+        this.apiReqs.send(JSON.stringify(user));
     }
 
     // put method
@@ -44,12 +46,18 @@ export class CustomHttpApi {
     put = (URL, user, callback) => {
         this.apiReqs.open('PUT', URL, true);
         this.apiReqs.setRequestHeader('Content-Type', 'application/json');
-        this.apiReqs.send(JSON.stringify(user));
+        // this.apiReqs.send(JSON.stringify(user));
         this.apiReqs.onload = () => {
-            let data = this.apiReqs.responseText;
-            let users = JSON.parse(data);
-            callback(users);
-        }
+            if (this.apiReqs.status === 200) {
+                let data = this.apiReqs.responseText;
+                let result = JSON.parse(data);
+                callback(null,result);
+            } else {
+                callback(`Error: ${this.apiReqs.status}`);
+            }
+        };
+        this.apiReqs.onerror = () => callback('Request failed');
+        this.apiReqs.send(JSON.stringify(user));
     }
 
 
@@ -57,12 +65,18 @@ export class CustomHttpApi {
     // delete method
     delete = (URL, callback) => {
         this.apiReqs.open('DELETE', URL, true);
-        this.apiReqs.setRequestHeader('Content-Type', 'application.json');
-        this.apiReqs.send();
+        // this.apiReqs.send();
         this.apiReqs.onload = () => {
-            let data = this.apiReqs.responseText;
-            let users = JSON.parse(data);
-            callback(users);
-        }                   
+            if (this.apiReqs.status === 200) {
+                let data = this.apiReqs.responseText;
+                // Handle empty or non-JSON response
+                let result = data ? JSON.parse(data) : {};
+                callback(null, result);
+            } else {
+                callback(`Error: ${this.apiReqs.status}`);
+            }
+        };  
+        this.apiReqs.onerror = () => callback('Request failed');
+        this.apiReqs.send();                 
     }
 }

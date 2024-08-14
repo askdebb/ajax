@@ -12,21 +12,26 @@ let uniqueID = () => {
     return Math.random().toString(36).substr(2,2);
 }
 
-function readUsersFile() {
+let readUsersFile = () => {
     return new Promise((resolve, reject) => {
         fs.readFile(usersDataFile, 'utf-8', (err, data) => {
             if(err) {
                 reject(err);
             }
             else {
-                resolve(JSON.parse(data));
+                try {
+                    resolve(JSON.parse(data));
+                } catch (parserErr) {
+                    reject(parserErr)
+                }
+                
             }
         });
     })
 }
 
 
-function writeUserFile(data) {
+let writeUserFile = (data) => {
     return new Promise((resolve, reject) => {
         const newData = JSON.stringify(data, null, 2)
         fs.writeFile(usersDataFile, newData, (err) => {
@@ -61,7 +66,7 @@ route.post('/users', (req,res) => {
         if(!Array.isArray(users)) {
             users = [];
         }
-        let userInfo = {
+        const userInfo = {
             id: uniqueID(),
             name: req.body.name,
             username: req.body.username,
@@ -73,12 +78,11 @@ route.post('/users', (req,res) => {
         writeUserFile(users)
             .then(() => {
                 console.log(`POST request received by server...${new Date().toLocaleTimeString()}`);
-                res.json({msg:'POST Request, Successful'});
+                res.status(201).json({msg:'POST Request, Successful'});
             })
             .catch(
                 (err) => {
                     console.log(`POST request failed...${new Date().toLocaleTimeString()}`);
-                    // res.status(500).json({error: err.message});
                     res.status(500).json({error: 'Failed to save user data'});
                 }
             )
@@ -95,7 +99,16 @@ route.put('/users/:id', (req, res) => {
         if(!Array.isArray(users)) {
             users = [];
         }
-        let userID = req.params.id;
+        const userID = req.params.id;
+        console.log("User ID: ",userID);
+
+        let userInfoToUpdateIndex = users.findIndex((thatUser) => {
+            return thatUser.id === userID;
+        });
+
+        if(userInfoToUpdateIndex === -1) {
+            return res.status(400).json({error: "User not found"});
+        }
         let updateUserInfo = {
             id: userID,
             name: req.body.name,
@@ -104,11 +117,9 @@ route.put('/users/:id', (req, res) => {
             gender: req.body.gender,
             date_of_birth: req.body.date_of_birth
         }
-        let userInfoToUpdateIndex = users.find((thatUser) => {
-            return thatUser.id === userID;
-        });
-
-        users.splice(users.indexOf(userInfoToUpdateIndex),1, updateUserInfo);
+        
+        users[userInfoToUpdateIndex] = updateUserInfo;
+        // users.splice(userInfoToUpdateIndex, 1, updateUserInfo);
         writeUserFile(users)
         .then(() => {
             console.log(`PUT Request successful at server ... ${new Date().toLocaleTimeString()}`);
